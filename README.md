@@ -1,5 +1,7 @@
 # AI Index Checker
 
+**Live: https://ai-index-checker.piter6917.workers.dev**
+
 Paste a URL, get a 0–100 score for how well AI answer engines (ChatGPT, Claude, Perplexity, Gemini, Copilot) can crawl, extract, and cite that page.
 
 This is not a Google SEO auditor. The checks target the things that decide whether a model can *use* a page: bot access at the CDN and robots.txt layer, whether the content exists in the raw HTML without JavaScript, whether the page is chunked into retrievable sections, and whether it carries the machine-readable claims (schema, canonical, dates, authorship) that make a model willing to quote it by name.
@@ -8,13 +10,25 @@ Zero dependencies. Node 20+ (uses the built-in `fetch`).
 
 ## Run
 
+Two runtimes share one codebase. `lib/` is the whole analyzer and is runtime-agnostic; only the server layer differs.
+
 ```
-cd ai-index-checker
-npm start          # http://localhost:4000
-npm run dev        # auto-restart on file changes
+npm start          # Node server on http://localhost:4000
+npm run dev        # same, with --watch
+
+npm run cf:dev     # Cloudflare Worker locally (workerd) on :8788
+npm run deploy     # wrangler deploy
 ```
 
-`PORT` overrides the default 4000.
+`PORT` overrides the default 4000 for the Node server.
+
+| | `server.js` (Node) | `src/worker.js` (Workers) |
+| --- | --- | --- |
+| Static files | `fs` from `public/` | `ASSETS` binding |
+| SSRF guard | DNS resolution + private-range check | Hostname/literal-IP patterns; Cloudflare egress will not route into private ranges |
+| Rate limit | in-process Map | per-isolate Map, best effort — use a Durable Object if it needs to be exact |
+
+Deploying needs no secrets: the Worker has no environment variables and no bindings beyond `ASSETS`.
 
 ## What a scan does
 
