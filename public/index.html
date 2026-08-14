@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Index Checker — how well can AI read your site?</title>
+<link rel="stylesheet" href="/style.css">
+<script>
+  // Applied before first paint so a stored light theme never flashes dark.
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="bar">
+      <div class="brand">
+        <span class="mark"></span>
+        <span>AI&nbsp;Index&nbsp;Checker</span>
+      </div>
+      <button id="theme" type="button" aria-label="Switch colour theme">
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg>
+        <span class="label">Theme</span>
+      </button>
+    </div>
+    <p class="tagline">Grades any public page on how readable it is to the crawlers behind ChatGPT, Claude, Perplexity, Gemini and Copilot — not to Google's blue links.</p>
+
+    <form id="scan-form" autocomplete="off">
+      <input id="url" name="url" type="text" placeholder="example.com/pricing" spellcheck="false" required>
+      <button id="go" type="submit">Scan</button>
+    </form>
+
+    <div class="samples">
+      Try: <button class="chip" data-url="anthropic.com">anthropic.com</button>
+      <button class="chip" data-url="developer.mozilla.org/en-US/docs/Web/HTML">MDN docs</button>
+      <button class="chip" data-url="news.ycombinator.com">Hacker News</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <div id="status" class="status" hidden></div>
+  <section id="result" hidden></section>
+
+  <section class="intro" id="intro">
+    <h2>What this measures</h2>
+    <div class="grid-3">
+      <article><h3>Crawler access</h3><p>Whether GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended and eleven others are actually allowed through — parsed from your live <code>robots.txt</code> against this exact path, plus a real request sent with a bot user-agent to catch WAF filtering.</p></article>
+      <article><h3>Extractability</h3><p>AI crawlers largely do not run JavaScript. We count the words present in the raw server response, detect client-only framework shells, and check whether the page is chunked into sections small enough to retrieve.</p></article>
+      <article><h3>Machine-readable signals</h3><p>JSON-LD schema, canonical identity, sitemaps, <code>llms.txt</code>, Open Graph — the unambiguous statements about what the page is, who wrote it, and when it last changed.</p></article>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  Scans are live and unauthenticated: only public pages, only <code>GET</code>, private IP ranges refused.
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

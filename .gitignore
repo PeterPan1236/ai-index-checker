@@ -1,0 +1,8 @@
+node_modules/
+.wrangler/
+srv.log
+srv.err
+wr.log
+wr.err
+.dev.vars
+.DS_Store
